@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink-50: #f7f8fa;
+  --color-ink-100: #edf0f3;
+  --color-ink-200: #dce1e7;
+  --color-ink-400: #929ba7;
+  --color-ink-500: #717c89;
+  --color-ink-600: #586574;
+  --color-ink-700: #3f4d5d;
+  --color-ink-800: #263444;
+  --color-ink-900: #142331;
+  --color-ink-950: #09131e;
+  --color-brand-100: #dce9e3;
+  --color-brand-400: #769b8b;
+  --color-brand-500: #386b57;
+  --color-brand-600: #245a45;
+  --color-brand-700: #1a4736;
+  --color-accent-400: #f1c16f;
+  --color-danger-500: #db4b4b;
+  --font-display: "Georgia", "Times New Roman", serif;
+}
+
+@layer base {
+  html { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+  body { margin: 0; min-width: 320px; }
+  button, input { font: inherit; }
+}
+
+@layer utilities {
+  .h-800px-50 { height: 50px; }
+  .my-800px-20 { margin-top: 20px; margin-bottom: 20px; }
+  .flex-800px { display: none; }
+  .m1000px-block { display: none; }
+  .mb-nav-hidden-at-800px { display: block; }
+  .shadow-panel { box-shadow: 0 18px 50px rgb(10 25 42 / 14%); }
+  .shadow-card { box-shadow: 0 5px 18px rgb(10 25 42 / 10%); }
+  .shadow-card-hover { box-shadow: 0 9px 26px rgb(10 25 42 / 18%); }
+  @media (min-width: 800px) {
+    .flex-800px { display: flex; }
+    .mb-nav-hidden-at-800px { display: none; }
+  }
+  @media (min-width: 1000px) {
+    .m1000px-block { display: block; }
+  }
+}
