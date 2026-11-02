@@ -1,5 +1,16 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 
+const userSlice = createSlice({
+  name: "user",
+  initialState: { isAuthenticated: false, user: null },
+  reducers: {
+    setUser(state, action) {
+      state.user = action.payload;
+      state.isAuthenticated = Boolean(action.payload);
+    },
+  },
+});
+
 const cartSlice = createSlice({
   name: "cart",
   initialState: { cart: [] },
@@ -7,13 +18,15 @@ const cartSlice = createSlice({
     addToCart(state, action) {
       const product = action.payload;
       const id = product?._id || product?.id;
-      const existing = state.cart.find(item => (item?._id || item?.id) === id);
+      const existing = state.cart.find(
+        (item) => (item?._id || item?.id) === id,
+      );
       if (existing) existing.qty = (existing.qty || 1) + (product.qty || 1);
       else state.cart.push({ ...product, qty: product.qty || 1 });
     },
     removeFromCart(state, action) {
       state.cart = state.cart.filter(
-        item => (item?._id || item?.id) !== action.payload,
+        (item) => (item?._id || item?.id) !== action.payload,
       );
     },
   },
@@ -26,13 +39,13 @@ const wishlistSlice = createSlice({
     addToWishlist(state, action) {
       const product = action.payload;
       const id = product?._id || product?.id;
-      if (!state.wishlist.some(item => (item?._id || item?.id) === id)) {
+      if (!state.wishlist.some((item) => (item?._id || item?.id) === id)) {
         state.wishlist.push(product);
       }
     },
     removeFromWishlist(state, action) {
       state.wishlist = state.wishlist.filter(
-        item => (item?._id || item?.id) !== action.payload,
+        (item) => (item?._id || item?.id) !== action.payload,
       );
     },
   },
@@ -40,10 +53,11 @@ const wishlistSlice = createSlice({
 
 export const { addToCart, removeFromCart } = cartSlice.actions;
 export const { addToWishlist, removeFromWishlist } = wishlistSlice.actions;
+export const { setUser } = userSlice.actions;
 
 const store = configureStore({
   reducer: {
-    user: (state = { isAuthenticated: false, user: null }) => state,
+    user: userSlice.reducer,
     seller: (state = { isSeller: false }) => state,
     cart: cartSlice.reducer,
     wishlist: wishlistSlice.reducer,

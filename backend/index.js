@@ -1,12 +1,20 @@
 import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./db/mongodb.js";
+import cookieParser from "cookie-parser";
 import userRouter from "./routes/UserRoutes.js";
+import cors from "cors";
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 dotenv.config();
-
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  }),
+);
 connectDB();
 
 app.get("/", (req, res) => {

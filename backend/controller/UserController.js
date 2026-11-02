@@ -138,3 +138,58 @@ export async function loginUser(req, res) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
+
+export async function logoutUser(req, res) {
+  try {
+    res.cookie("token", "", {
+      expires: new Date(0),
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+    res.status(201).json({ success: true, message: "Logout Successful!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function loadUser(req, res) {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function updateUser(req, res) {
+  try {
+    const { fullName, email, password, phoneNumber } = req.body;
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return res.json({ success: false, message: "User doesn't exist!" });
+    }
+    const isPasswordMatched = await user.comparePassword(password);
+    if (!isPasswordMatched) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invaild Credentails!" });
+    }
+    user.fullName = fullName;
+    user.phoneNumber = phoneNumber;
+
+    await user.save();
+    res.status(201).json({ success: true, user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false });
+  }
+}

@@ -44,10 +44,10 @@ function CountBadge({ count = 0, tone = "accent" }) {
 }
 
 function Header({ activeHeading }) {
-  const { isAuthenticated, user } = useSelector(state => state.user);
-  const { isSeller } = useSelector(state => state.seller);
-  const { cart } = useSelector(state => state.cart);
-  const { wishlist } = useSelector(state => state.wishlist);
+  const { isAuthenticated, user } = useSelector((state) => state.user);
+  const { isSeller } = useSelector((state) => state.seller);
+  const { cart } = useSelector((state) => state.cart);
+  const { wishlist } = useSelector((state) => state.wishlist);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState(null);
   const [dropdown, setDropdown] = useState(false);
@@ -55,7 +55,7 @@ function Header({ activeHeading }) {
   const [open, setOpen] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const [openWishList, setOpenWishList] = useState(false);
-  const { allProducts } = useSelector(state => state.product);
+  const { allProducts } = useSelector((state) => state.product);
 
   function handleSearchChange(e) {
     const term = e.target.value;
@@ -66,8 +66,8 @@ function Header({ activeHeading }) {
       return;
     }
 
-    const filteredProducts = allProducts.filter(product =>
-      product.name.toLowerCase().includes(term.toLowerCase())
+    const filteredProducts = allProducts.filter((product) =>
+      product.name.toLowerCase().includes(term.toLowerCase()),
     );
     setSearchData(filteredProducts);
   }
@@ -93,7 +93,7 @@ function Header({ activeHeading }) {
         document.body.style.overflow = "";
       };
     },
-    [open]
+    [open],
   );
 
   const searchResults = (searchData || []).slice(0, 6);
@@ -358,7 +358,7 @@ function Header({ activeHeading }) {
               initial="hidden"
               animate="visible"
               exit="exit"
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
               className="flex h-full w-[82%] max-w-[340px] flex-col overflow-y-auto bg-white shadow-panel"
             >
               {/* drawer head */}

@@ -1,19 +1,54 @@
 import { useState } from "react";
 import { HiOutlineMail, HiOutlineLockClosed } from "react-icons/hi";
 import { IoIosArrowForward } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
 
 import AuthShell from "../ui/AuthShell";
 import Field from "../ui/Field";
 import SubmitButton from "../ui/SubmitButton";
+import { setUser } from "../../store/store";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [status, setStatus] = useState("");
-  function handleSubmit(event) {
-    event.preventDefault();
-    setStatus("Sign-in is not available right now. Please try again later.");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setIsLoading(true);
+    await axios
+      .post(
+        `${API_BASE_URL}/api/v2/user/login-user`,
+        {
+          email,
+          password,
+        },
+        { withCredentials: true },
+      )
+      .then((response) => {
+        const loggedInUser =
+          response?.data?.user ??
+          response?.data?.userData ??
+          response?.data?.data?.user;
+        if (loggedInUser) dispatch(setUser(loggedInUser));
+        setIsLoading(false);
+        setEmail("");
+        setPassword("");
+        toast.success("Login Successfully!");
+        navigate("/");
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        toast.error(err?.response?.data?.message);
+        console.error("Error during login:", err);
+      });
   }
 
   return (
@@ -37,7 +72,7 @@ function Login() {
           required
           placeholder="you@example.com"
           value={email}
-          onChange={event => setEmail(event.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <Field
@@ -49,7 +84,7 @@ function Login() {
           required
           placeholder="Enter your password"
           value={password}
-          onChange={event => setPassword(event.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
         <div className="flex items-center justify-between">
@@ -73,16 +108,10 @@ function Login() {
           </Link>
         </div>
 
-        <SubmitButton type="submit" className="!bg-[#6366F1] hover:!bg-[#4F46E5]">
+        <SubmitButton loading={isLoading} loadingText="Signing in…">
           Sign in
           <IoIosArrowForward />
         </SubmitButton>
-
-        {status && (
-          <p role="status" className="text-center text-[13px] text-danger-500">
-            {status}
-          </p>
-        )}
 
         <div className="relative py-1">
           <div className="absolute inset-0 flex items-center">
@@ -112,7 +141,6 @@ function Login() {
             Seller login
           </Link>
         </p>
-
       </form>
     </AuthShell>
   );
