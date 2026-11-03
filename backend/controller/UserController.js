@@ -181,7 +181,7 @@ export async function updateUser(req, res) {
     if (!isPasswordMatched) {
       return res
         .status(400)
-        .json({ success: false, message: "Invaild Credentails!" });
+        .json({ success: false, message: "InvainewPassword,ld Credentails!" });
     }
     user.fullName = fullName;
     user.phoneNumber = phoneNumber;
@@ -191,5 +191,58 @@ export async function updateUser(req, res) {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false });
+  }
+}
+
+export async function updateUserPassword(req, res) {
+  try {
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+    const user = await User.findById(req.user.id).select("+password");
+    const isPasswordMatched = await user.comparePassword(oldPassword);
+    if (!isPasswordMatched) {
+      return res.status(400).json({
+        success: false,
+        message: "Old Password is incorrect!",
+      });
+    }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Password doesn' t match with each other!",
+      });
+    }
+    user.password = newPassword;
+    await user.save();
+    res
+      .status(201)
+      .json({ success: true, message: "Password Updated Successfully!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "INTERNAL SERVER ERROR!" });
+  }
+}
+
+export async function updateAvatar(req, res) {
+  try {
+    const existUser = await User.findById(req.user.id);
+    const oldPublicId = existUser?.avatar?.public_id;
+    if (oldPublicId) {
+      await cloudinary.uploader.destroy(`jutly_uploads/${oldPublicId}`);
+    }
+    const newPublicId = req.file.filename.split(".")[0];
+    const newUrl = req.file.path;
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        avatar: {
+          public_id: newPublicId,
+          url: newUrl,
+        },
+      },
+      { new: true },
+    );
+    res.status(201).json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "INTERNAL SERVER ERROR!" });
   }
 }

@@ -6,6 +6,8 @@ import Login from "./components/UserComps/Login";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Slide } from "react-toastify";
+import Signup from "./components/UserComps/Signup";
+import ProfilePage from "./pages/ProfilePage";
 
 const App = () => {
   return (
@@ -13,6 +15,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/sign-up" element={<Signup />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
       <ToastContainer
         position="top-right"
