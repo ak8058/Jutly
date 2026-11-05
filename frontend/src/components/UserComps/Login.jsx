@@ -9,7 +9,8 @@ import { useDispatch } from "react-redux";
 import AuthShell from "../ui/AuthShell";
 import Field from "../ui/Field";
 import SubmitButton from "../ui/SubmitButton";
-import { setUser } from "../../store/store";
+import { setUser } from "../../redux-toolkit/reducers/userReducer";
+import { loadUser } from "../../redux-toolkit/actions/userActions";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -38,6 +39,7 @@ function Login() {
           response?.data?.userData ??
           response?.data?.data?.user;
         if (loggedInUser) dispatch(setUser(loggedInUser));
+        else dispatch(loadUser());
         setIsLoading(false);
         setEmail("");
         setPassword("");

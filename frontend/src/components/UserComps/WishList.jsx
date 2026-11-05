@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { RxCross1 } from "react-icons/rx";
 import { backdrop, drawer } from "../../lib/motion";
-import { removeFromWishlist } from "../../store/store";
+// import { removeFromWishlist } from "../../store/store";
 
 function getImage(product) {
   return product?.images?.[0]?.url || product?.image_Url?.[0]?.url || product?.image_Url?.[0] || product?.image_Url || "";

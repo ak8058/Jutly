@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { RxCross1 } from "react-icons/rx";
 import { backdrop, drawer } from "../../lib/motion";
-import { removeFromCart } from "../../store/store";
+// import { removeFromCart } from "../../store/store";
 
 function getImage(product) {
   return product?.images?.[0]?.url || product?.image_Url?.[0]?.url || product?.image_Url?.[0] || product?.image_Url || "";
@@ -71,7 +71,7 @@ function Cart({ setOpenCart }) {
                 <span className="font-medium text-ink-600">Subtotal</span>
                 <span className="font-display text-lg font-bold text-ink-900">₹{total.toLocaleString("en-IN")}</span>
               </div>
-              <Link to="/checkout" onClick={() => setOpenCart(false)} className="flex h-12 items-center justify-center rounded-xl bg-[#6366F1] font-semibold text-white transition hover:bg-[#4F46E5]">Continue to checkout</Link>
+              <Link to="/checkout" onClick={() => setOpenCart(false)} className="btn-primary flex h-12 items-center justify-center rounded-xl font-semibold">Continue to checkout</Link>
             </div>
           </>
         ) : (

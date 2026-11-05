@@ -181,9 +181,10 @@ export async function updateUser(req, res) {
     if (!isPasswordMatched) {
       return res
         .status(400)
-        .json({ success: false, message: "InvainewPassword,ld Credentails!" });
+        .json({ success: false, message: "Invalid Credentials" });
     }
     user.fullName = fullName;
+    user.email = email;
     user.phoneNumber = phoneNumber;
 
     await user.save();
@@ -239,10 +240,39 @@ export async function updateAvatar(req, res) {
           url: newUrl,
         },
       },
-      { new: true },
+      { returnDocument: "after" },
     );
     res.status(201).json({ success: true, user });
   } catch (error) {
     res.status(500).json({ success: false, message: "INTERNAL SERVER ERROR!" });
+  }
+}
+
+export async function updateAddresses(req, res) {
+  try {
+    const { addressType } = req.body;
+    const user = await User.findById(req.user.id);
+    const sameTypeAddress = user.addresses.find(
+      (address) => address.addressType === addressType,
+    );
+    if (sameTypeAddress) {
+      return res.json({
+        success: false,
+        message: `${addressType} address already exists!`,
+      });
+    }
+    const existsAddress = user.addresses.find(
+      (address) => address._id === req.body._id,
+    );
+    if (existsAddress) {
+      Object.assign(existsAddress, req.body);
+    } else {
+      user.addresses.push(req.body);
+    }
+    await user.save();
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false });
   }
 }

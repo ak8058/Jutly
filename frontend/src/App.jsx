@@ -1,4 +1,7 @@
 import { Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { loadUser } from "./redux-toolkit/actions/userActions";
 import Header from "./components/Layouts/Header";
 import Hero from "./components/UserComps/Hero";
 import HomePage from "./pages/HomePage";
@@ -10,6 +13,8 @@ import Signup from "./components/UserComps/Signup";
 import ProfilePage from "./pages/ProfilePage";
 
 const App = () => {
+  const dispatch = useDispatch();
+  useEffect(() => { dispatch(loadUser()); }, [dispatch]);
   return (
     <>
       <Routes>

@@ -3,6 +3,7 @@ import Header from "../components/Layouts/Header";
 import PageHero from "../components/ui/PageHero";
 import ProfileSidebar from "../components/UserComps/ProfileSlidebar";
 import styles from "../styles/styles";
+import ProfileContent from "../components/UserComps/ProfileContent";
 
 const TITLES = {
   1: "Your profile",
@@ -30,6 +31,10 @@ function ProfilePage() {
         <aside className="w-[74px] shrink-0 min-w-800px-335 self-start lg:sticky lg:top-24">
           <ProfileSidebar active={active} setActive={setActive} />
         </aside>
+
+        <div className="min-w-0 flex-1">
+          <ProfileContent active={active} />
+        </div>
       </main>
     </div>
   );

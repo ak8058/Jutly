@@ -217,8 +217,8 @@ function Header({ activeHeading }) {
 
       {/* ================= Primary nav (desktop) ==================== */}
       <div
-        className={`sticky top-0 z-40 hidden flex-800px w-full items-center justify-between bg-ink-900 transition-shadow duration-300 ${
-          active ? "h-[64px] shadow-panel" : "h-[70px]"
+        className={`sticky top-0 z-40 hidden h-[70px] flex-800px w-full items-center justify-between bg-ink-900 transition-shadow duration-300 ${
+          active ? "shadow-panel" : ""
         }`}
       >
         <div
@@ -469,7 +469,7 @@ function Header({ activeHeading }) {
                     <Link
                       to="/sign-up"
                       onClick={() => setOpen(false)}
-                      className="flex h-[44px] flex-1 items-center justify-center rounded-xl bg-brand-600 font-semibold text-white transition-colors hover:bg-brand-700"
+                      className="btn-primary flex h-[44px] flex-1 items-center justify-center rounded-xl font-semibold"
                     >
                       Sign up
                     </Link>

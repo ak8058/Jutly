@@ -10,11 +10,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import ProductDetailCard from "./ProductDetailCard";
 import Ratings from "./Ratings";
-import {
-  addToCart,
-  addToWishlist,
-  removeFromWishlist,
-} from "../../store/store";
+// import {
+//   addToCart,
+//   addToWishlist,
+//   removeFromWishlist,
+// } from "../../store/store";
 import { easeOutSoft } from "../../lib/motion";
 
 function getProductImage(product) {

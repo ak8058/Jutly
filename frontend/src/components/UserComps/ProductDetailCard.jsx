@@ -11,7 +11,7 @@ import {
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, addToWishlist, removeFromWishlist } from "../../store/store";
+// import { addToCart, addToWishlist, removeFromWishlist } from "../../store/store";
 import Ratings from "./Ratings";
 import { backdrop, modal } from "../../lib/motion";
 
@@ -231,7 +231,7 @@ function ProductDetailCard({ setOpen, product, preview = false }) {
               type="button"
               whileTap={{ scale: 0.98 }}
               onClick={addProductToCart}
-              className="mt-5 flex h-[50px] w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-brand-600 font-semibold text-white shadow-card transition-all duration-300 hover:bg-brand-700 hover:shadow-card-hover"
+              className="btn-primary mt-5 flex h-[50px] w-full cursor-pointer items-center justify-center gap-2 rounded-xl font-semibold shadow-card transition-all duration-300 hover:shadow-card-hover"
             >
               Add to cart
               <AiOutlineShoppingCart size={19} />

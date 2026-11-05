@@ -11,14 +11,16 @@ import {
 } from "react-icons/md";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { setUser } from "../../redux-toolkit/reducers/userReducer";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ProfileSidebar({ active, setActive }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
   const [avatarFailed, setAvatarFailed] = useState(false);
   const avatarUrl = user?.avatar?.url;
@@ -29,9 +31,9 @@ function ProfileSidebar({ active, setActive }) {
         withCredentials: true,
       });
       if (res.data.success) {
+        dispatch(setUser(null));
         toast.success(res.data.message);
-        window.location.reload(true);
-        navigate("/");
+        navigate("/", { replace: true });
       }
     } catch (err) {
       toast.error("Try again Later!");
@@ -92,7 +94,7 @@ function ProfileSidebar({ active, setActive }) {
   return (
     <nav className="w-full rounded-2xl border border-ink-100 bg-white p-3 shadow-card">
       {/* identity */}
-      <div className="mb-3 flex items-center justify-center gap-3 rounded-xl p-3">
+      <div className="mb-3 flex items-center justify-center gap-3 rounded-xl p-3 min-[800px]:justify-start">
         <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full ring-2 ring-white">
           <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full font-display text-lg font-bold text-brand-700">
             {avatarUrl && !avatarFailed ? (
@@ -130,7 +132,7 @@ function ProfileSidebar({ active, setActive }) {
               <motion.button
                 onClick={onClick}
                 whileTap={{ scale: 0.98 }}
-                className={`relative flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl px-0 py-2.5 text-center transition-colors duration-200 ${
+                className={`relative flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl px-0 py-2.5 text-center transition-colors duration-200 min-[800px]:justify-start min-[800px]:px-3 min-[800px]:text-left ${
                   isActive
                     ? "bg-[#6366F1]/10 font-semibold text-[#6366F1]"
                     : "text-ink-600 hover:bg-ink-50 hover:text-ink-900"
@@ -160,7 +162,7 @@ function ProfileSidebar({ active, setActive }) {
           <motion.button
             onClick={() => setActive(8) || logoutHandler()}
             whileTap={{ scale: 0.98 }}
-            className="flex w-full cursor-pointer items-center gap-3 rounded-xl border-t border-ink-100 px-3 py-2.5 pt-3.5 text-left text-danger-600 transition-colors duration-200 hover:bg-danger-50"
+            className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl border-t border-ink-100 px-0 py-2.5 pt-3.5 text-danger-600 transition-colors duration-200 hover:bg-danger-50 min-[800px]:justify-start min-[800px]:px-3"
           >
             <MdOutlineLogout size={19} className="shrink-0" />
             <span className="hidden text-[14px] font-medium display-block-800px">
