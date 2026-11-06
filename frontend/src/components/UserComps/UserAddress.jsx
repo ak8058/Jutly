@@ -13,6 +13,10 @@ import {
   HiOutlineStar,
 } from "react-icons/hi";
 import { backdrop, modal, easeOutSoft } from "../../lib/motion";
+import {
+  deleteAddress,
+  updateAddresses,
+} from "../../redux-toolkit/actions/userActions";
 
 const inputClass =
   "w-full rounded-xl border border-ink-200 bg-ink-50/60 px-4 py-2.5 text-[15px] text-ink-900 placeholder:text-ink-400 transition-all duration-200 focus:border-brand-500 focus:bg-white focus:ring-4 focus:ring-brand-500/10";
@@ -193,7 +197,11 @@ function UserAddress() {
                 </button>
               </header>
 
-              <form aria-required className="space-y-5 p-6">
+              <form
+                aria-required
+                onSubmit={handleSubmit}
+                className="space-y-5 p-6"
+              >
                 <div>
                   <label className={labelClass}>Country</label>
                   <div className="relative">

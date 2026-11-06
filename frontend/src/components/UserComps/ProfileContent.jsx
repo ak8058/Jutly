@@ -19,6 +19,7 @@ import {
   updateUser,
 } from "../../redux-toolkit/actions/userActions";
 import UserAddress from "./UserAddress";
+import ChangePassword from "./ChangePassword";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -199,6 +200,7 @@ function ProfileContent({ active }) {
       )}
 
       {/* ================= Other panels ========================= */}
+      {active === 6 && <ChangePassword />}
       {active === 7 && <UserAddress />}
     </div>
   );

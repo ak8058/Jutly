@@ -17,6 +17,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ function Login() {
         {
           email,
           password,
+          rememberMe,
         },
         { withCredentials: true },
       )
@@ -98,6 +100,8 @@ function Login() {
               type="checkbox"
               name="remember-me"
               id="remember-me"
+              checked={rememberMe}
+              onChange={(event) => setRememberMe(event.target.checked)}
               className="h-4 w-4 cursor-pointer rounded border-ink-300 accent-[#6366F1]"
             />
             Remember me

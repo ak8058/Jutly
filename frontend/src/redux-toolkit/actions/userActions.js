@@ -19,6 +19,11 @@ export const loadUser = createAsyncThunk(
       });
       return data.user;
     } catch (error) {
+      // No session is a normal state for visitors; don't surface the backend's
+      // "Unauthorized: login required" response as a user-facing error.
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        return rejectWithValue(null);
+      }
       return rejectWithValue(apiError(error, "Failed to load user"));
     }
   },
@@ -80,6 +85,50 @@ export const updateUserAvatar = createAsyncThunk(
       return data.user;
     } catch (error) {
       return rejectWithValue(apiError(error, "Failed to update avatar"));
+    }
+  },
+);
+
+export const updateAddresses = createAsyncThunk(
+  "updateAddresses/load",
+  async (
+    { country, city, zipCode, address1, address2, addressType },
+    { rejectWithValue },
+  ) => {
+    try {
+      const { data } = await axios.put(
+        `${API_BASE_URL}/api/v2/user/update-user-addresses`,
+        { country, city, zipCode, address1, address2, addressType },
+        { withCredentials: true },
+      );
+      if (!data?.success || !data.user) {
+        const message = data?.message || "Failed to update addresses";
+        return rejectWithValue(message);
+      }
+      toast.success("User Addresses Updated Successfully!");
+      return data.user;
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Failed to update addresses";
+      return rejectWithValue(message);
+    }
+  },
+);
+
+export const deleteAddress = createAsyncThunk(
+  "deleteAddress/load",
+  async (id, thunkAPI) => {
+    try {
+      const { data } = await axios.delete(
+        `${API_BASE_URL}/api/v2/user/delete-user-address/${id}`,
+        { withCredentials: true },
+      );
+      if (data?.success) toast.success("User address deleted successfully!");
+      return data.user;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to delete address!",
+      );
     }
   },
 );

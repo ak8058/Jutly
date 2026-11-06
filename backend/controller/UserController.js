@@ -94,18 +94,23 @@ export async function activateUser(req, res) {
     let Userr = await User.findOne({ email });
 
     if (Userr) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
-        message: "User already exists",
+        message: "This activation link was already used. Please sign in.",
       });
     }
 
-    Userr = await User.create({
-      fullName,
-      email,
-      password,
-      avatar,
-    });
+    try {
+      Userr = await User.create({ fullName, email, password, avatar });
+    } catch (error) {
+      // A second activation request can race past findOne. The unique email
+      // index rejects the duplicate; return the existing account as success.
+      if (error.code !== 11000) throw error;
+      return res.status(409).json({
+        success: false,
+        message: "This activation link was already used. Please sign in.",
+      });
+    }
 
     return sendToken(Userr, 201, res);
   } catch (error) {
@@ -120,7 +125,7 @@ export async function activateUser(req, res) {
 
 export async function loginUser(req, res) {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe = false } = req.body;
     if (!email || !password) {
       return res.status(400).json({ message: "Please provide all fields" });
     }
@@ -132,7 +137,7 @@ export async function loginUser(req, res) {
     if (!isPasswordMatched) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    sendToken(user, 201, res);
+    sendToken(user, 201, res, rememberMe === true);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -250,29 +255,63 @@ export async function updateAvatar(req, res) {
 
 export async function updateAddresses(req, res) {
   try {
-    const { addressType } = req.body;
+    const { addressType, country, city, address1, address2, zipCode } =
+      req.body;
     const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
     const sameTypeAddress = user.addresses.find(
       (address) => address.addressType === addressType,
     );
     if (sameTypeAddress) {
-      return res.json({
+      return res.status(409).json({
         success: false,
         message: `${addressType} address already exists!`,
       });
     }
+    const addressData = {
+      addressType,
+      country,
+      city,
+      address1,
+      address2,
+      zipCode,
+    };
+
     const existsAddress = user.addresses.find(
       (address) => address._id === req.body._id,
     );
     if (existsAddress) {
-      Object.assign(existsAddress, req.body);
+      Object.assign(existsAddress, addressData);
     } else {
-      user.addresses.push(req.body);
+      user.addresses.push(addressData);
     }
     await user.save();
     res.status(200).json({ success: true, user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false });
+  }
+}
+
+export async function deleteUserAddress(req, res) {
+  try {
+    const userId = req.user._id;
+    const addressId = req.params.id;
+    await User.updateOne(
+      {
+        _id: userId,
+      },
+      { $pull: { addresses: { _id: addressId } } },
+    );
+    const user = await User.findById(userId);
+    res.status(201).json({ success: true, user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "INTERNAL SERVER ERROR!" });
   }
 }

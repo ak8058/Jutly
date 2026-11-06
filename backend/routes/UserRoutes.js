@@ -3,9 +3,11 @@ import upload from "../config/multer.js";
 import {
   activateUser,
   createUser,
+  deleteUserAddress,
   loadUser,
   loginUser,
   logoutUser,
+  updateAddresses,
   updateAvatar,
   updateUser,
   updateUserPassword,
@@ -28,6 +30,13 @@ userRouter.put(
   isAuthenticated,
   upload.single("file"),
   updateAvatar,
+);
+
+userRouter.put("/update-user-addresses", isAuthenticated, updateAddresses);
+userRouter.delete(
+  "/delete-user-address/:id",
+  isAuthenticated,
+  deleteUserAddress,
 );
 
 export default userRouter;

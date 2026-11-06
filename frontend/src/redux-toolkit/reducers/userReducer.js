@@ -1,7 +1,9 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import {
   clearErrors,
+  deleteAddress,
   loadUser,
+  updateAddresses,
   updateUser,
   updateUserAvatar,
   updateUserPassword,
@@ -11,6 +13,7 @@ const initialState = {
   isAuthenticated: false,
   user: null,
   loading: false,
+  authChecked: false,
   error: null,
 };
 export const setUser = createAction("user/setUser");
@@ -24,15 +27,18 @@ export const userReducer = createReducer(initialState, (builder) => {
     })
     .addCase(loadUser.pending, (state) => {
       state.loading = true;
+      state.authChecked = false;
       state.error = null;
     })
     .addCase(loadUser.fulfilled, (state, action) => {
       state.loading = false;
+      state.authChecked = true;
       state.isAuthenticated = Boolean(action.payload);
       state.user = action.payload || null;
     })
     .addCase(loadUser.rejected, (state, action) => {
       state.loading = false;
+      state.authChecked = true;
       state.isAuthenticated = false;
       state.user = null;
       state.error = action.payload;
@@ -58,28 +64,28 @@ export const userReducer = createReducer(initialState, (builder) => {
     .addCase(updateUserPassword.rejected, (state, action) => {
       state.error = action.payload;
     })
-    // .addCase(updateAddresses.pending, (state) => {
-    //   state.addressloading = true;
-    // })
-    // .addCase(updateAddresses.fulfilled, (state, action) => {
-    //   state.addressloading = false;
-    //   state.user = action.payload;
-    // })
-    // .addCase(updateAddresses.rejected, (state, action) => {
-    //   state.addressloading = false;
-    //   state.error = action.payload;
-    // })
-    // .addCase(deleteAddress.pending, (state) => {
-    //   state.deletingAddress = true;
-    // })
-    // .addCase(deleteAddress.fulfilled, (state, action) => {
-    //   state.deletingAddress = false;
-    //   state.user = action.payload;
-    // })
-    // .addCase(deleteAddress.rejected, (state, action) => {
-    //   state.deletingAddress = false;
-    //   state.error = action.payload;
-    // })
+    .addCase(updateAddresses.pending, (state) => {
+      state.addressloading = true;
+    })
+    .addCase(updateAddresses.fulfilled, (state, action) => {
+      state.addressloading = false;
+      state.user = action.payload;
+    })
+    .addCase(updateAddresses.rejected, (state, action) => {
+      state.addressloading = false;
+      state.error = action.payload;
+    })
+    .addCase(deleteAddress.pending, (state) => {
+      state.deletingAddress = true;
+    })
+    .addCase(deleteAddress.fulfilled, (state, action) => {
+      state.deletingAddress = false;
+      state.user = action.payload;
+    })
+    .addCase(deleteAddress.rejected, (state, action) => {
+      state.deletingAddress = false;
+      state.error = action.payload;
+    })
     .addCase(clearErrors, (state) => {
       state.error = null;
     });

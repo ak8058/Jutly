@@ -11,17 +11,53 @@ import "react-toastify/dist/ReactToastify.css";
 import { Slide } from "react-toastify";
 import Signup from "./components/UserComps/Signup";
 import ProfilePage from "./pages/ProfilePage";
+import PageTransitionLoader from "./components/ui/PageTransitionLoader";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import GuestRoute from "./routes/GuestRoute";
+import ActivationPage from "./pages/ActivationPage";
 
 const App = () => {
   const dispatch = useDispatch();
-  useEffect(() => { dispatch(loadUser()); }, [dispatch]);
+  useEffect(() => {
+    dispatch(loadUser());
+  }, [dispatch]);
   return (
     <>
+      <PageTransitionLoader />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/sign-up" element={<Signup />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route
+          path="/login"
+          element={
+            <GuestRoute>
+              <Login />
+            </GuestRoute>
+          }
+        />
+        <Route
+          path="/sign-up"
+          element={
+            <GuestRoute>
+              <Signup />
+            </GuestRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/activation/:url"
+          element={
+            <GuestRoute>
+              <ActivationPage />
+            </GuestRoute>
+          }
+        />
       </Routes>
       <ToastContainer
         position="top-right"
