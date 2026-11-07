@@ -15,6 +15,8 @@ import PageTransitionLoader from "./components/ui/PageTransitionLoader";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import GuestRoute from "./routes/GuestRoute";
 import ActivationPage from "./pages/ActivationPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -42,6 +44,8 @@ const App = () => {
             </GuestRoute>
           }
         />
+        <Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} />
+        <Route path="/reset-password/:token" element={<GuestRoute><ResetPasswordPage /></GuestRoute>} />
         <Route
           path="/profile"
           element={

@@ -3,6 +3,7 @@ import { sendToken } from "../config/jwtToken.js";
 import transporter from "../config/nodemailer.js";
 import User from "../models/UserModel.js";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 function createActivationToken(user) {
   return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "5m" });
@@ -141,6 +142,56 @@ export async function loginUser(req, res) {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function forgotPassword(req, res) {
+  try {
+    const email = req.body.email?.trim().toLowerCase();
+    const response = { success: true, message: "If an account exists for that email, a reset link has been sent." };
+    if (!email) return res.status(400).json({ success: false, message: "Please provide your email address." });
+    const user = await User.findOne({ email });
+    if (!user) return res.status(200).json(response);
+
+    const token = crypto.randomBytes(32).toString("hex");
+    user.resetPasswordToken = crypto.createHash("sha256").update(token).digest("hex");
+    user.resetPasswordTime = Date.now() + 15 * 60 * 1000;
+    await user.save({ validateBeforeSave: false });
+    try {
+      await transporter.sendMail({
+        from: process.env.SENDER_EMAIL,
+        to: user.email,
+        subject: "Reset your Jutly password",
+        html: `<p>Use this link to reset your password. It expires in 15 minutes.</p><a href="${process.env.FRONTEND_URL}/reset-password/${token}">Reset password</a>`,
+      });
+    } catch (mailError) {
+      user.resetPasswordToken = undefined;
+      user.resetPasswordTime = undefined;
+      await user.save({ validateBeforeSave: false });
+      throw mailError;
+    }
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    return res.status(500).json({ success: false, message: "Unable to send a reset email right now." });
+  }
+}
+
+export async function resetPassword(req, res) {
+  try {
+    const password = req.body.password;
+    if (!password || password.length < 4) return res.status(400).json({ success: false, message: "Password must be at least 4 characters long." });
+    const hashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+    const user = await User.findOne({ resetPasswordToken: hashedToken, resetPasswordTime: { $gt: Date.now() } }).select("+password");
+    if (!user) return res.status(400).json({ success: false, message: "This reset link is invalid or expired." });
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordTime = undefined;
+    await user.save();
+    return res.status(200).json({ success: true, message: "Password reset successfully. You can sign in." });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    return res.status(500).json({ success: false, message: "Unable to reset password right now." });
   }
 }
 

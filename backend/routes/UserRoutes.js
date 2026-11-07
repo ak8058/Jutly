@@ -4,9 +4,11 @@ import {
   activateUser,
   createUser,
   deleteUserAddress,
+  forgotPassword,
   loadUser,
   loginUser,
   logoutUser,
+  resetPassword,
   updateAddresses,
   updateAvatar,
   updateUser,
@@ -20,6 +22,8 @@ userRouter.post("/create-user", upload.single("file"), createUser);
 userRouter.post("/activation", activateUser);
 
 userRouter.post("/login-user", loginUser);
+userRouter.post("/forgot-password", forgotPassword);
+userRouter.put("/reset-password/:token", resetPassword);
 userRouter.get("/logout-user", isAuthenticated, logoutUser);
 
 userRouter.get("/get-user", isAuthenticated, loadUser);
