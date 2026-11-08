@@ -136,7 +136,7 @@ export async function activateSeller(req, res) {
 
 export async function loginSeller(req, res) {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe = false } = req.body;
     if (!email || !password) {
       return res.status(400).json({ message: "Please provide all fields" });
     }
@@ -150,7 +150,38 @@ export async function loginSeller(req, res) {
     if (!isPasswordMatched) {
       return res.status(401).json({ message: "Invalid credentials!" });
     }
-    sendShopToken(seller, 201, res);
+    sendShopToken(seller, 201, res, rememberMe === true);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function loadSeller(req, res) {
+  try {
+    const seller = await Shop.findById(req.seller.id);
+    if (!seller) {
+      return res.status(404).json({ message: "Seller not found" });
+    }
+    res.status(200).json({
+      success: true,
+      seller,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function logoutSeller(req, res) {
+  try {
+    res.cookie("seller_token", "", {
+      expires: new Date(0),
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+    });
+    res.status(201).json({ success: true, message: "Logout Successful!" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });

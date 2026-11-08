@@ -17,11 +17,14 @@ import GuestRoute from "./routes/GuestRoute";
 import ActivationPage from "./pages/ActivationPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ShopLoginPage from "./pages/ShopLoginPage";
+import { loadSeller } from "./redux-toolkit/actions/sellerAction";
 
 const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(loadUser());
+    dispatch(loadSeller());
   }, [dispatch]);
   return (
     <>
@@ -44,8 +47,22 @@ const App = () => {
             </GuestRoute>
           }
         />
-        <Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} />
-        <Route path="/reset-password/:token" element={<GuestRoute><ResetPasswordPage /></GuestRoute>} />
+        <Route
+          path="/forgot-password"
+          element={
+            <GuestRoute>
+              <ForgotPasswordPage />
+            </GuestRoute>
+          }
+        />
+        <Route
+          path="/reset-password/:token"
+          element={
+            <GuestRoute>
+              <ResetPasswordPage />
+            </GuestRoute>
+          }
+        />
         <Route
           path="/profile"
           element={
@@ -62,6 +79,7 @@ const App = () => {
             </GuestRoute>
           }
         />
+        <Route path="/shop-login" element={<ShopLoginPage />} />
       </Routes>
       <ToastContainer
         position="top-right"

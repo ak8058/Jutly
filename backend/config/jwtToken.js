@@ -18,14 +18,15 @@ const sendToken = (user, statusCode, res, rememberMe = true) => {
   });
 };
 
-function sendShopToken(seller, statusCode, res) {
+function sendShopToken(seller, statusCode, res, rememberMe = true) {
   const token = seller.getJwtToken();
   const options = {
-    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
     httpOnly: true,
     sameSite: "none",
     secure: true,
   };
+  if (rememberMe)
+    options.expires = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
   return res.status(statusCode).cookie("seller_token", token, options).json({
     success: true,
     seller,
