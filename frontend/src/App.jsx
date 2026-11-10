@@ -19,6 +19,18 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ShopLoginPage from "./pages/ShopLoginPage";
 import { loadSeller } from "./redux-toolkit/actions/sellerAction";
+import ShopDashboardPage from "./pages/ShopDashboardPage";
+import ShopCreateProduct from "./components/SellerComps/ShopCreateProduct";
+import ShopAllProducts from "./components/SellerComps/ShopAllProducts";
+import ShopAllOrders from "./components/SellerComps/ShopAllOrders";
+import ShopPreviewPage from "./components/SellerComps/ShopPreviewPage";
+import ShopCreateEvent from "./components/SellerComps/ShopCreateEvent";
+import ShopAllEvents from "./components/SellerComps/ShopAllEvents";
+import ShopWithdrawMoneyPage from "./pages/ShopWithdrawMoneyPage";
+import ShopSettingsPage from "./pages/ShopSettingsPage";
+import ShopHomePage from "./pages/ShopHomePage";
+import ShopAllCoupons from "./components/SellerComps/ShopAllCoupons";
+import ShopAllRefunds from "./components/SellerComps/ShopAllRefunds";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -80,6 +92,27 @@ const App = () => {
           }
         />
         <Route path="/shop-login" element={<ShopLoginPage />} />
+
+        <Route path="/dashboard" element={<ShopDashboardPage />} />
+
+        <Route
+          path="/dashboard-create-product"
+          element={<ShopCreateProduct />}
+        />
+        <Route path="/dashboard-orders" element={<ShopAllOrders />} />
+        <Route path="/dashboard-products" element={<ShopAllProducts />} />
+        <Route path="/shop/preview/:id" element={<ShopPreviewPage />} />
+        <Route path="/dashboard-create-event" element={<ShopCreateEvent />} />
+        <Route path="/dashboard-events" element={<ShopAllEvents />} />
+        <Route
+          path="/dashboard-withdraw-money"
+          element={<ShopWithdrawMoneyPage />}
+        />
+        <Route path="/dashboard-settings" element={<ShopSettingsPage />} />
+        <Route path="/shop/:id" element={<ShopHomePage />} />
+        {/* <Route path="/dashboard-messages" element={<ShopInboxPage />} /> */}
+        <Route path="/dashboard-coupons" element={<ShopAllCoupons />} />
+        <Route path="/dashboard-refunds" element={<ShopAllRefunds />} />
       </Routes>
       <ToastContainer
         position="top-right"
