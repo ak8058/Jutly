@@ -187,3 +187,68 @@ export async function logoutSeller(req, res) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
+
+export async function getShopInfo(req, res) {
+  try {
+    const shop = await Shop.findById(req.params.id);
+    res.status(201).json({ success: true, shop });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "INTERNAL SERVER ERROR!" });
+  }
+}
+
+export async function updateShopAvatar(req, res) {
+  try {
+    if (!req.file?.path || !req.file?.filename) {
+      return res.status(400).json({ success: false, message: "Please upload an avatar!" });
+    }
+    const existSeller = await Shop.findById(req.seller._id);
+    if (!existSeller) {
+      return res.status(404).json({ success: false, message: "Seller not found" });
+    }
+    const oldPublicId = existSeller?.avatar?.public_id;
+    const newPublicId = req.file.filename.split(".")[0];
+    existSeller.avatar = {
+      public_id: newPublicId,
+      url: req.file.path,
+    };
+    await existSeller.save();
+    if (oldPublicId && oldPublicId !== newPublicId) {
+      try {
+        await cloudinary.uploader.destroy(`multivendor_uploads/${oldPublicId}`);
+      } catch (deleteError) {
+        // The new avatar is already saved, so a cleanup failure must not fail the upload.
+        console.error("Previous shop avatar cleanup failed:", deleteError);
+      }
+    }
+    return res.status(200).json({ success: true, seller: existSeller });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "INTERNAL SERVER ERROR!" });
+  }
+}
+
+export async function updateShopProfile(req, res) {
+  try {
+    const { name, description, address, phoneNumber, zipCode } = req.body;
+    const shop = await Shop.findById(req.seller._id);
+    if (!shop) {
+      return res.status(404).json({ success: false, message: "Shop doesn't exist!" });
+    }
+    shop.name = name;
+    shop.description = description;
+    shop.address = address;
+    shop.phoneNumber = phoneNumber;
+    shop.zipCode = zipCode;
+
+    await shop.save();
+    res.status(201).json({ success: true, shop });
+  } catch (error) {
+    console.error("Shop profile update failed:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Shop profile update failed",
+    });
+  }
+}

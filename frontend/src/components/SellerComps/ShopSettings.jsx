@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AiOutlineCamera } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -15,59 +15,67 @@ const inputClass =
 const labelClass = "mb-1.5 block text-[13px] font-semibold text-ink-700";
 
 function ShopSettings() {
-  const { seller } = useSelector(state => state.seller);
+  const { seller } = useSelector((state) => state.seller);
   const [avatar, setAvatar] = useState(null);
-  const [name, setName] = useState(seller?.name);
-  const [description, setDescription] = useState(seller?.description);
-  const [address, setAddress] = useState(seller?.address);
-  const [phoneNumber, setPhoneNumber] = useState(seller?.phoneNumber);
-  const [zipCode, setZipCode] = useState(seller?.zipCode);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [address, setAddress] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [zipCode, setZipCode] = useState("");
   const [uploading, setUploading] = useState(false);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    if (!seller) return;
+    setName(seller.name || "");
+    setDescription(seller.description || "");
+    setAddress(seller.address || "");
+    setPhoneNumber(seller.phoneNumber || "");
+    setZipCode(seller.zipCode == null ? "" : String(seller.zipCode));
+  }, [seller]);
+
   async function handleImage(e) {
     e.preventDefault();
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
+    if (!file) return;
     setAvatar(file);
     setUploading(true);
 
     const formData = new FormData();
-    formData.append("image", e.target.files[0]);
-    await axios
-      .put(`${API_BASE_URL}/api/v2/seller/update-shop-avatar`, formData, {
+    formData.append("file", file);
+    try {
+      await axios.put(`${API_BASE_URL}/api/v2/seller/update-shop-avatar`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
         withCredentials: true,
-      })
-      .then(() => {
-        dispatch(loadSeller);
-        toast.success("Avatar Updated!");
-        setUploading(false);
-      })
-      .catch(error => {
-        toast.error(error);
-        setUploading(false);
       });
+      await dispatch(loadSeller()).unwrap();
+      setAvatar(null);
+      toast.success("Avatar updated!");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error?.message || "Avatar update failed");
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    await axios
-      .put(
+    try {
+      const { data } = await axios.put(
         `${API_BASE_URL}/api/v2/seller/update-shop-profile`,
         { name, description, address, phoneNumber, zipCode },
-        { withCredentials: true }
-      )
-      .then(() => {
-        dispatch(loadSeller());
-        toast.success("Profile Updated!");
-      })
-      .catch(error => {
-        toast.error(error?.message);
-        console.error(error);
-      });
+        { withCredentials: true },
+      );
+      if (!data.success) throw new Error(data.message || "Profile update failed");
+      await dispatch(loadSeller()).unwrap();
+      toast.success("Profile updated!");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error?.message || "Profile update failed");
+      console.error(error);
+    }
   }
 
   return (
@@ -139,7 +147,7 @@ function ShopSettings() {
             <input
               type="text"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
               placeholder="HS store"
               className={inputClass}
               required
@@ -152,7 +160,7 @@ function ShopSettings() {
               rows="4"
               placeholder="Tell shoppers what your shop is about"
               value={description}
-              onChange={e => setDescription(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
               className={`${inputClass} resize-none leading-relaxed`}
             />
           </div>
@@ -163,7 +171,7 @@ function ShopSettings() {
               type="address"
               placeholder="Shop address"
               value={address}
-              onChange={e => setAddress(e.target.value)}
+              onChange={(e) => setAddress(e.target.value)}
               className={inputClass}
               required
             />
@@ -176,7 +184,7 @@ function ShopSettings() {
                 type="number"
                 placeholder="+425167512468"
                 value={phoneNumber}
-                onChange={e => setPhoneNumber(e.target.value)}
+                onChange={(e) => setPhoneNumber(e.target.value)}
                 className={inputClass}
                 required
               />
@@ -188,7 +196,7 @@ function ShopSettings() {
                 type="number"
                 placeholder="914121"
                 value={zipCode}
-                onChange={e => setZipCode(e.target.value)}
+                onChange={(e) => setZipCode(e.target.value)}
                 className={inputClass}
                 required
               />
